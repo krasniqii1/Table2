@@ -1,14 +1,16 @@
-const users = [];
+let users = [];
 
 const idEl = document.getElementById('id');
 const nameEl = document.getElementById('name');
-const ageEl = document.getElementById('age');
-const phoneEl = document.getElementById('phone');
+const ageEl = document.getElementById('lastName');
+const phoneEl = document.getElementById('email');
 const saveButton = document.querySelector('.save-btn');
 const tbody = document.getElementById('tbody');
 
 let idCounter = 1;
 let currentRow = null;
+
+fetchApi();
 
 function createCell(content, classNames) {
     const cell = document.createElement('td');
@@ -22,46 +24,70 @@ function createButtonCell() {
 };
 
 function addRow() {
-    const row = document.createElement('tr');
     const userId = idCounter++;
 
     const newUser = {
         id: userId,
         name: nameEl.value,
-        age: ageEl.value,
+        age: lastName.value,
         phone: phoneEl.value
     };
 
-    const cells = [
-        createCell(userId, 'grid-item'),
-        createCell(newUser.name, 'grid-item'),
-        createCell(newUser.age, 'grid-item'),
-        createCell(newUser.phone, 'grid-item'),
-        createButtonCell()
-    ];
-
-    cells.forEach(cell => row.appendChild(cell));
-    tbody.appendChild(row);
 
     users.push(newUser);
-    console.log(users)
-
-    const editButton = row.querySelector('.edit-btn');
-    editButton.addEventListener('click', () => {
-        editRow(row, newUser);
-    })
-
-    const removeBtn = row.querySelector('.remove-btn');
-    removeBtn.addEventListener('click', () => {
-        removeRow(row, userId);
-    })
-
+    console.log(users)    
     clearInputFields()
+    showTable(users);
 };
 
 
+function showTable(users) {
+    const table = document.getElementById("tbody");
+    table.innerHTML = "";
+    idCounter = 1;
+    users.forEach( user =>{
+        const row = document.createElement('tr');
+        const userId = idCounter++;
+    
+
+        const newUser = {
+            id: user.id,
+            firstName: user.first_name,
+           lastName: user.last_name,
+           email : user.email
+        };
+    
+        const cells = [
+            createCell(userId, 'grid-item'),
+            createCell(newUser.firstName, 'grid-item'),
+            createCell(newUser.lastName, 'grid-item'),
+            createCell(newUser.email, 'grid-item'),
+            createButtonCell()
+        ];
+    
+        cells.forEach(cell => row.appendChild(cell));
+        tbody.appendChild(row);
+    
+    
+        const editButton = row.querySelector('.edit-btn');
+        editButton.addEventListener('click', () => {
+            editRow(row, newUser);
+        })
+    
+        const removeBtn = row.querySelector('.remove-btn');
+        removeBtn.addEventListener('click', () => {
+            removeRow(row, userId);
+        })
+    
+        clearInputFields()
+    })
+    
+};
+
 function editRow(row, newUser) {
     const cells = row.querySelectorAll('.grid-item');
+
+    const id = row.querySelectorAll('.grid-item')[0].textContent;
 
     nameEl.value = cells[1].textContent;
     ageEl.value = cells[2].textContent;
@@ -73,29 +99,52 @@ function editRow(row, newUser) {
 
 
 function removeRow(row, userId) {
-    const tbody = document.getElementById('tbody');
-    tbody.removeChild(row);
-
     const index = users.findIndex((user) => user.id === userId);
     if (index !== -1) {
         users.splice(index, 1);
     }
 
     console.log(users)
+    showTable(users)
 }
 
 function saveRow() {
     if (!currentRow) return;
     const cells = currentRow.querySelectorAll('.grid-item');
 
-    cells[1].textContent = nameEl.value;
-    cells[2].textContent = ageEl.value;
-    cells[3].textContent = phoneEl.value;
 
-    updateNewUsers()
+    console.log("CELLS:", cells)
+
+
+    const id = currentRow.querySelectorAll('.grid-item')[0].textContent;
+
+    let user = users[id-1];
+
+    const newFirstName = nameEl.value
+   const newLastName = ageEl.value;
+    const newEmail =  phoneEl.value;
+
+
+    console.log("firstName:", newFirstName)
+
+
+    users[id-1] = {
+            id: users[id-1].id,
+            firstName: newFirstName,
+           lastName: newLastName,
+           email : newEmail
+     };
+
+    console.log("IDDDD:", id)
+
+    console.log("USERSSS CLicked :", users[id-1])
+    console.log("userss", users)
+
+
     clearInputFields()
-    fetchApi()
     console.log(users);
+
+    showTable(users)
 };
 
 
@@ -109,14 +158,23 @@ saveButton.addEventListener('click', () => {
 
 function fetchApi() {
     fetch('https://reqres.in/api/users', {
-        method: 'POST',
+        method: 'GET',
         headers: {
             'Content-Type': 'aplication/json'
-        },
-        body: JSON.stringify(users)
-    }).then(res => res.json())
-        .then(data => console.log(data))
+        }
+        })
+        .then(res => res.json())
+        .then(data => {
+            console.log(data.data)
+            users= (data.data)
+            console.log("USERS:", users)
+            showTable(users)
+        })
+        
         .catch(error => console.error(error))
+
+        console.log("usersssss")
+        console.log("USERSssss:", users)
 }
 
 function clearInputFields() {
@@ -131,3 +189,4 @@ function updateNewUsers() {
     currentRow.newUser.phone = phoneEl.value;
     currentRow = null;
 }
+
