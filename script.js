@@ -28,14 +28,13 @@ function addRow() {
 
     const newUser = {
         id: userId,
-        name: nameEl.value,
-        age: lastName.value,
-        phone: phoneEl.value
+        first_name: nameEl.value,
+        last_name: ageEl.value,
+        email: phoneEl.value
     };
 
-
     users.push(newUser);
-    console.log(users)    
+    console.log(users)
     clearInputFields()
     showTable(users);
 };
@@ -45,18 +44,18 @@ function showTable(users) {
     const table = document.getElementById("tbody");
     table.innerHTML = "";
     idCounter = 1;
-    users.forEach( user =>{
+    users.forEach(user => {
         const row = document.createElement('tr');
         const userId = idCounter++;
-    
+
 
         const newUser = {
             id: user.id,
             firstName: user.first_name,
-           lastName: user.last_name,
-           email : user.email
+            lastName: user.last_name,
+            email: user.email
         };
-    
+
         const cells = [
             createCell(userId, 'grid-item'),
             createCell(newUser.firstName, 'grid-item'),
@@ -64,24 +63,24 @@ function showTable(users) {
             createCell(newUser.email, 'grid-item'),
             createButtonCell()
         ];
-    
+
         cells.forEach(cell => row.appendChild(cell));
         tbody.appendChild(row);
-    
-    
+
+
         const editButton = row.querySelector('.edit-btn');
         editButton.addEventListener('click', () => {
             editRow(row, newUser);
         })
-    
+
         const removeBtn = row.querySelector('.remove-btn');
         removeBtn.addEventListener('click', () => {
             removeRow(row, userId);
         })
-    
+
         clearInputFields()
     })
-    
+
 };
 
 function editRow(row, newUser) {
@@ -118,26 +117,26 @@ function saveRow() {
 
     const id = currentRow.querySelectorAll('.grid-item')[0].textContent;
 
-    let user = users[id-1];
+    let user = users[id - 1];
 
     const newFirstName = nameEl.value
-   const newLastName = ageEl.value;
-    const newEmail =  phoneEl.value;
+    const newLastName = ageEl.value;
+    const newEmail = phoneEl.value;
 
 
     console.log("firstName:", newFirstName)
 
 
-    users[id-1] = {
-            id: users[id-1].id,
-            firstName: newFirstName,
-           lastName: newLastName,
-           email : newEmail
-     };
+    users[id - 1] = {
+        id: users[id - 1].id,
+        first_name: newFirstName,
+        last_name: newLastName,
+        email: newEmail
+    };
 
     console.log("IDDDD:", id)
 
-    console.log("USERSSS CLicked :", users[id-1])
+    console.log("USERSSS CLicked :", users[id - 1])
     console.log("userss", users)
 
 
@@ -162,19 +161,19 @@ function fetchApi() {
         headers: {
             'Content-Type': 'aplication/json'
         }
-        })
+    })
         .then(res => res.json())
         .then(data => {
             console.log(data.data)
-            users= (data.data)
+            users = (data.data)
             console.log("USERS:", users)
             showTable(users)
         })
-        
+
         .catch(error => console.error(error))
 
-        console.log("usersssss")
-        console.log("USERSssss:", users)
+    console.log("usersssss")
+    console.log("USERSssss:", users)
 }
 
 function clearInputFields() {
